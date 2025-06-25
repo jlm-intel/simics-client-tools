@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# this builds the arrow lake platform (pkg-8150). script assumes you are
+# in the meteorlake project directory (vp/mtl) of a fresh repo.
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+NUMJOBS=4
+if [ -z $1 ]
+then
+    echo "Defaulting to $NUMJOBS jobs..."
+else
+    NUMJOBS=$1
+fi
+
+export BUILD_CONFIDENTIALITY=99
+export ENVCHECK=disable
+
+# NOTE: Nice range is from -20 (highest priorty) to 19 (lowest priority)
+
+for CURTAR in novalake-s-6.0
+do
+    # vp project setup
+    vp platform setup ${CURTAR}  2>&1 | tee setup-${CURTAR}.log
+    vp platform build ${CURTAR}  2>&1 | tee build-${CURTAR}.log
+done
+
+
+# for CURTAR in pkg-prep-7630 pkg-7630 nvl-iosf wire-interface
+# do
+#     echo "nice -n 5 gmake -j${NUMJOBS} ${CURTAR}"
+#     nice -n 5 gmake -j${NUMJOBS} ${CURTAR} 2>&1 | tee build-${CURTAR}.log
+#     bldresult=$?
+#     #echo "bldresult: ${bldresult}"
+#     if [ $bldresult -ne 0 ]
+#     then
+#         die "ERROR: ${CURTAR} build failed with code ${bldresult}. See build-${CURTAR}.log for details."
+#     else
+#         echo "INFO: ${CURTAR} build (supposedly) succeeded."
+#     fi
+# done

@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# suppresses errors if a wildcard search doesn't find anything
+shopt -s nullglob
+
+cd /tmp
+# NOTE: Wildcard must go OUTSIDE OF QUOTES to be expanded
+for CURDIR in "ssh-"*
+do
+    if [ -d "${CURDIR}" ]
+    then
+        #echo "Found ${CURDIR}"
+        rm -rf "$CURDIR"
+    else
+        echo "Not a dir: ${CURDIR}"
+    fi
+done
+
+# NOTE: Wildcard must go OUTSIDE OF QUOTES to be expanded
+for CURFILE in "krb5cc_10636577_"*
+do
+    if [ -f "${CURFILE}" ]
+    then
+        #echo "Found ${CURDIR}"
+        #rm -rf "$CURDIR"
+        rm "$CURFILE"
+    else
+        echo "Not a file: ${CURFILE}"
+    fi
+done
+
+# NOTE: Wildcard must go OUTSIDE OF QUOTES to be expanded
+for CURFILE in "eclogin-errors.jlmayfie"*
+do
+    if [ -f "${CURFILE}" ]
+    then
+        #echo "Found ${CURDIR}"
+        #rm -rf "$CURDIR"
+        rm "$CURFILE"
+    else
+        echo "Not a file: ${CURFILE}"
+    fi
+done

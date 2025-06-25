@@ -1,0 +1,28 @@
+#!/bin/bash
+
+#set -x
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+echo "*** Remember to SOURCE this script to make change permanent!!! ***"
+echo "Changing to ${SIMICSUSERDIR}."
+cd $SIMICSUSERDIR
+if [ $? -ne 0 ]
+then
+    die "ERROR: Unable to change to ${SIMICSUSERDIR}."
+fi
+
+if [ -z "$1" ]
+then
+    echo "No subdirectory specified. Operation complete."
+else
+    echo "Changing to ${1} inside ${SIMICSUSERDIR}..."
+    cd "$1"
+    if [ $? -ne 0 ]
+    then
+        die "ERROR: Unable to change to ${SIMICSUSERDIR}/${1}."
+    fi
+fi

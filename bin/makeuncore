@@ -1,0 +1,9 @@
+#!/bin/bash
+
+nice -n 5 gmake mtl-soc-m-north-a0-cdb
+bldresult=$?
+echo "bldresult: ${bldresult}"
+
+nice -n 5 gmake mtl-soc-m-a0-uncore
+bldresult=$?
+echo "bldresult: ${bldresult}"

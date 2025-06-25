@@ -1,0 +1,6 @@
+#!/usr/intel/bin/bash
+
+# Prints a sorted list of directories, by size, in the current directory.
+# Note: Can expand this to take an argument to substitute for '.'
+
+du -h -x --max-depth=1 . | sort -hr

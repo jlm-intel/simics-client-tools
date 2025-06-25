@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#set -x
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+export XTENSA_BASE=/nfs/site/proj/simics/simics_extensions
+if [ ! -d "$XTENSA_BASE" ]
+then
+    die "Dir does not exist: $XTENSA_BASE"
+fi
+export XTENSA_DIR=${XTENSA_BASE}/xtensa
+if [ ! -d "$XTENSA_DIR" ]
+then
+    die "Dir does not exist: $XTENSA_DIR"
+fi
+export LD_LIBRARY_PATH=${XTENSA_BASE}/xtensa/XtDevTools/install/tools/RG-2019.12-linux/XtensaTools/lib64/iss
+if [ ! -d "$LD_LIBRARY_PATH" ]
+then
+    die "Dir does not exist: $LD_LIBRARY_PATH"
+fi
+export XTENSA_BUILDS_PATH=${XTENSA_BASE}/xtensa/XtDevTools/install/builds/RG-2019.12-linux
+if [ ! -d "$XTENSA_BUILDS_PATH" ]
+then
+    die "Dir does not exist: $XTENSA_BUILDS_PATH"
+fi
+export XTENSA_TOOLS_PATH=${XTENSA_BASE}/xtensa/XtDevTools/install/tools/RG-2019.12-linux/XtensaTools
+if [ ! -d "$XTENSA_TOOLS_PATH" ]
+then
+    die "Dir does not exist: $XTENSA_TOOLS_PATH"
+fi
+export LM_LICENSE_FILE=84300@fmylic7005.fm.intel.com
+echo "Xtensa variables set successfully."

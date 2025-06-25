@@ -1,0 +1,10 @@
+#!/bin/bash
+#echo $@
+echo "Logging arl-s.simics to arl-s.log..."
+./simics targets/mtl/arl-s.simics $@ 2>&1 | tee arl-s.log
+bldresult=$?
+echo "bldresult: ${bldresult}"
+if [ $bldresult -ne 0 ]
+then
+    echo "ERROR: Run failed with code $bldresult"
+fi

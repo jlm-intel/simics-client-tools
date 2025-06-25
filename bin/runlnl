@@ -1,0 +1,10 @@
+#!/bin/bash
+#echo $@
+echo "Running lnl-m.simics. Note: You can pass Simics options to this script..."
+./simics targets/lnl/lnl-m.simics $@
+bldresult=$?
+echo "bldresult: ${bldresult}"
+if [ $bldresult -ne 0 ]
+then
+    echo "ERROR: Run failed with code $bldresult"
+fi

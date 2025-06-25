@@ -1,0 +1,52 @@
+#!/bin/bash                                                                                                                                                           
+
+#set -x
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+SCRIPTNAME="/tmp/${USER}/edfile_run.sh"
+BACKUPSCRIPT="/tmp/${USER}/edfile_backup.sh"
+
+# make temp area
+mkdir -p /tmp/$USER
+if [ $? -ne 0 ]
+then
+    die "ERROR: Unable to make directory /tmp/$USER"
+fi
+
+# cleanup
+if [ -f "$SCRIPTNAME" ]
+then
+    rm "$SCRIPTNAME"
+fi
+
+if [ -f "$BACKUPSCRIPT" ]
+then
+    rm "$BACKUPSCRIPT"
+fi
+
+echo "Beginning build..."
+echo -e "make tgl-p0-cdb\n" > "$SCRIPTNAME"
+
+while true
+do
+    if [ -f "$SCRIPTNAME" ]
+    then
+	# make backup for housekeeping
+	cp "$SCRIPTNAME" "$BACKUPSCRIPT"
+	rm "$SCRIPTNAME"
+	echo "Running script..."
+	bash "$BACKUPSCRIPT"
+	rm "$BACKUPSCRIPT"
+    fi
+
+    echo "Sleeping 3..."
+    sleep 1
+    echo "Sleeping 2..."
+    sleep 1
+    echo "Sleeping 1..."
+    sleep 1
+done

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#set -x
+
+# glc = git log context: Display git log contents, with adjustable context info.
+# 1st param (required): string to search log for
+# 2nd param (optional): how many lines of context to include before and after search term
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+# one param requred
+if [ -z "$1" ]
+then
+    die "ERROR: Please pass a string to search for in git log."
+fi
+
+CONTEXT_LINES=5
+# set second param
+if [ ! -z "$2" ]
+then
+    CONTEXT_LINES="$2"
+fi
+
+echo "Calling: git log | grep -C ${CONTEXT_LINES} ${1} | more..."
+echo "----------------------------------------------------------"
+git log --date=local | grep -C ${CONTEXT_LINES} "${1}" | more
+if [ $? -ne 0 ]
+then
+    die "ERROR: git log failed."
+fi

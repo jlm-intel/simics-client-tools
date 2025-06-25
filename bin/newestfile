@@ -1,0 +1,22 @@
+#!/bin/bash
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+CURDIR="."
+if [ -z "$1" ]
+then
+    CURDIR="./linux64/lib"
+else
+    CURDIR="$1"
+fi
+
+if [ ! -d "$CURDIR" ]
+then
+    die "ERROR: ${CURDIR} is not a directory. Please pass a real directory or run from simics project dir."
+fi
+
+echo "Newest file in ${CURDIR}:"
+ls -lArt ${CURDIR} | tail -n 1

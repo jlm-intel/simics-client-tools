@@ -1,0 +1,13 @@
+#!/bin/bash
+cdbfuncs.py dump r=adls-a0-19ww27a t=/nfs/site/proj/simics/users/jlmayfie/19ww27a  b=DevBank_sb_5e_00_CR.dml
+cdbfuncs.py dump r=adls-a0-19ww27a t=/nfs/site/proj/simics/users/jlmayfie/19ww27a  b=DevBank_sb_5e_00_MEM.dml
+cdbfuncs.py dump r=adls-a0-19ww27a t=/nfs/site/proj/simics/users/jlmayfie/19ww27a  b=DevBank_sb_5e_00_bar6_MEM.dml
+cdbfuncs.py dump r=adls-a0-19ww27a t=/nfs/site/proj/simics/users/jlmayfie/19ww27a  b=DevBank_sb_9a_00_CR.dml
+cdbfuncs.py dump r=adls-a0-19ww27a t=/nfs/site/proj/simics/users/jlmayfie/19ww27a  b=DevBank_sb_83_00_MEM.dml
+cdbfuncs.py dump r=adls-a0-19ww27a t=/nfs/site/proj/simics/users/jlmayfie/19ww27a  b=DevBank_sb_83_00_bar0_MEM.dml
+cdbfuncs.py dump r=tgl-h-p0-19ww18 t=/nfs/site/proj/simics/users/jlmayfie/19ww18  b=DevBank_sb_80_00_CR.dml
+cdbfuncs.py dump r=tgl-h-p0-19ww18 t=/nfs/site/proj/simics/users/jlmayfie/19ww18  b=DevBank_sb_80_00_MEM.dml
+cdbfuncs.py dump r=tgl-h-p0-19ww18 t=/nfs/site/proj/simics/users/jlmayfie/19ww18  b=DevBank_sb_80_00_bar0_MEM.dml
+cdbfuncs.py dump r=tgl-h-p0-19ww18 t=/nfs/site/proj/simics/users/jlmayfie/19ww18  b=DevBank_sb_80_00_bar6_MEM.dml
+cdbfuncs.py dump r=tgl-h-p0-19ww18 t=/nfs/site/proj/simics/users/jlmayfie/19ww18  b=DevBank_sb_83_00_MEM.dml
+cdbfuncs.py dump r=tgl-h-p0-19ww18 t=/nfs/site/proj/simics/users/jlmayfie/19ww18  b=DevBank_sb_83_00_bar0_MEM.dml

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+NUMJOBS=10
+if [ -z $1 ]
+then
+    echo "Defaulting to $NUMJOBS jobs..."
+else
+    NUMJOBS=$1
+fi
+
+export BUILD_CONFIDENTIALITY=99
+
+#echo "nice -n 10 gmake -j${NUMJOBS} pkg-7444 pkg-7440 pkg-7446 pkg-7938 pkg-7319 pkg-7443 pkg-7967 pkg-7937 pkg-7960"
+#nice -n 10 gmake -j${NUMJOBS}       pkg-7444 pkg-7440 pkg-7446 pkg-7938 pkg-7319 pkg-7443 pkg-7967 pkg-7937 pkg-7960
+#adl + pmc + punit only
+echo "nice -n 10 gmake -j${NUMJOBS} pkg-7444 pkg-7440 pkg-7446 pkg-7938"
+nice -n 10 gmake -j${NUMJOBS}       pkg-7444 pkg-7440 pkg-7446 pkg-7938
+bldresult=$?
+echo "bldresult: ${bldresult}"
+if [ $bldresult -ne 0 ]
+then
+    echo "ERROR: Build failed with code $bldresult"
+else
+    echo "INFO: Build (supposedly) succeeded."
+fi

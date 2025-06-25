@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# This script searches for all subdirectories under the given directory and runs the greperrors
+# script inside them, creating fresh versions of the .TXT files that contain all error/fail/exception lines
+# from all .LOG files in that directory.
+
+#set -x
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+TARGDIR="/nfs/site/proj/simics/users/jlmayfie/logs"
+if [ ! -z "$1" ]
+then
+    TARGDIR="$1"
+fi
+
+echo "Running greperrors in all directories under ${TARGDIR}..."
+
+for CURDIR in "$TARGDIR"/*
+do
+    if [ -d "${CURDIR}" ]
+    then
+        greperrors "${CURDIR}"
+    fi
+done

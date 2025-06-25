@@ -1,0 +1,63 @@
+#!/bin/bash
+
+#set -x
+
+# glc = git log context: Display git log contents, with adjustable context info.
+# 1st param (required): string to search log for
+# 2nd param (optional): how many lines of context to include before and after search term
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+back_up_files() {
+    if [ -z "$1" ]
+    then
+        die "ERROR: back_up_files() needs source directory"
+    fi
+    if [ -z "$2" ]
+    then
+        die "ERROR: back_up_files() needs target directory"
+    fi
+    if [ ! -d "$1" ]
+    then
+        die "ERROR: ${1} is not a real source directory"
+    fi
+    if [ ! -d "$2" ]
+    then
+        die "ERROR: ${2} is not a real target directory"
+    fi
+
+    echo "Backing up directory: ${1}"
+
+    # enable dotfile expansion with wildcards
+    shopt -s dotglob
+
+    # make sure target files are writeable. not sure how to handle the
+    # wildcard expansion so just changing into directory first.
+    pushd "${2}" > /dev/null
+    chmod +w *
+    popd > /dev/null
+
+    for CURFILE in "$1"/*
+    do
+        echo "- Processing ${CURFILE}"
+        if [ -f "$CURFILE" ]
+        then
+            cp "$CURFILE" "$2"
+            if [ $? -ne 0 ]
+                then echo "ERROR: Couldn't copy ${CURFILE} to ${2}"
+            fi
+        fi
+    done
+
+    # -e allows use of \n in echo command
+    echo -e "(files backed up to: ${2})\n"
+
+    # disable dotfile expansion
+    shopt -u dotglob
+}
+
+back_up_files ~ /nfs/site/proj/simics/users/jlmayfie/backups_dotfiles
+back_up_files ~/bin /nfs/site/proj/simics/users/jlmayfie/backups_bin

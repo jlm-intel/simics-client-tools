@@ -1,0 +1,62 @@
+#!/bin/bash
+
+#set -x
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+# one param requred
+if [ -z "$1" ]
+then
+    die "Please pass the filename or path of a file to open in kate."
+fi
+
+# use parameter directly if file exists
+FILETOOPEN=$1
+# trim everything after the colon, if found
+while [[ "$FILETOOPEN" == *":"* ]]
+do
+    FILETOOPEN=${FILETOOPEN%:*}
+    echo $FILETOOPEN
+done
+
+if [ ! -f "$FILETOOPEN" ]
+then
+    # file not found, see if we need to search for it
+    # pipe output through head so we only take the first result
+    FOUNDPATH=`find . -name $FILETOOPEN | head -n 1`
+    if [ $? -ne 0 ]
+    then
+	die "Unable to find file named: $FILETOOPEN in subdirectories."
+    fi
+    
+    if [ ! -f "$FOUNDPATH" ]
+    then
+	die "No file matching $FILETOOPEN found."
+    fi
+
+    # if here, we found at least one filen
+    echo "Found file: $FOUNDPATH"
+    FILETOOPEN="$FOUNDPATH"
+fi
+
+# use different commands depending on linux version
+issles11
+if [ $? -eq 1 ]
+then
+    # launch file in existing instance of kate (if exists), in background
+    kate -u "$FILETOOPEN" &
+else
+    # sles12 version defaults to multi-instance, no switch needed
+    kate "$FILETOOPEN" &
+fi
+if [ $? -ne 0 ]
+then
+    die "Unable to open $FILETOOPEN in kate."
+fi
+
+#if here we were successful
+echo "Successfully opened $FILETOOPEN in kate."
+exit 0;

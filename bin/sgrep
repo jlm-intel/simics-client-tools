@@ -1,0 +1,26 @@
+#!/bin/bash                                                                                                                                                           
+
+#set -x
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+if [ -z "$1" ]
+then
+    die "ERROR: You must at least specify a search term to look for in source."
+fi
+SEARCHTERM="$1"
+
+SEARCHDIR=.
+
+if [ -z "$2" ]
+then
+    echo "INFO: No 2nd param specified, searching in $SEARCHDIR"
+else
+    SEARCHDIR="$2"
+fi
+
+echo "Searching for ${SEARCHTERM} in ${SEARCHDIR}..."
+find "${SEARCHDIR}" \( -name "*.dml" -o -name "*.simics" -o -name "*.include" -o -name "*.py" \) -exec grep --with-filename -i "${SEARCHTERM}" {} \;

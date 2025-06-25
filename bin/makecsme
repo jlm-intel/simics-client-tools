@@ -1,0 +1,6 @@
+rm linux64/lib/mtl-soc-m-a0-gsc.so
+rm linux64/lib/mtl-socs-m-a0-cse.so 
+rm linux64/lib/mtl-socs-m-a0-ese.so
+gmake mtl-soc-m-a0-gsc
+gmake mtl-socs-m-a0-cse 
+gmake mtl-socs-m-a0-ese

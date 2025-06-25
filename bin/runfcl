@@ -1,0 +1,11 @@
+#!/bin/bash
+#echo $@
+echo "Running fcl/fcl. Note: You can pass Simics options to this script..."
+# ./simics targets/nvl-s/platform.target.yml $@
+./simics fcl/fcl $@
+bldresult=$?
+echo "bldresult: ${bldresult}"
+if [ $bldresult -ne 0 ]
+then
+    echo "ERROR: Run failed with code $bldresult"
+fi

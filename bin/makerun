@@ -1,0 +1,21 @@
+#!/bin/bash
+
+NUMJOBS=10
+if [ -z $1 ]
+then
+    echo "Defaulting to $NUMJOBS jobs..."
+else
+    NUMJOBS=$1
+fi
+
+echo "nice -n 10 gmake -j${NUMJOBS} pkg-7444"
+nice -n 10 gmake -j${NUMJOBS} pkg-7444
+bldresult=$?
+echo "bldresult: ${bldresult}"
+if [ $bldresult -ne 0 ]
+then
+    echo "ERROR: Build failed with code $bldresult"
+else
+    ./simics -verbose targets/adl/tgl-h-a0-renamed-uncore-adp-s-a0.simics
+    ./simics -verbose targets/adl/adl-s-a0-tgp-h-a0.simics
+fi

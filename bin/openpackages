@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#set -x
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+if [ ! -d ../_tools ]
+then
+    die "No ../_tools found. Please run from project directory."
+fi
+
+for curvalue in 7319 7389 7392 7401 7443 7444 7446 7780 7937 7938 7960 7967 7980
+do
+    echo "Opening $curvalue..."
+    kateu ../_tools/packaging_6.0/${curvalue}/packages.list
+    sleep 1
+done

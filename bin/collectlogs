@@ -1,0 +1,58 @@
+#!/bin/bash
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+# echo "Args: ${#}"
+
+
+if [ -z "$1" ]
+then
+    die "ERROR: No name for backup specified. You can also optionally specify a directory to get logs from."
+fi
+
+sourcedir="."
+if [ $# -ge 2 ]
+then
+    sourcedir="$2"
+fi
+
+echo "First arg - Name to use: ${1}"
+echo "Second arg - Directory to collect logs from: ${sourcedir}"
+
+printf -v mydate '%(%Y_%m_%d_%H_%M_%S)T' -1
+# echo $mydate
+# mydate=$(printf -v date '%(%Y_%m_%d_%H_%M_%S")T\n' -1)
+dirname="${1}_${mydate}"
+pathname="${TRANSDIR}/logs/${dirname}"
+mkdir -p "${pathname}"
+if [ $? -ne 0 ]
+then
+    die "ERROR: Unable to create directory ${pathname}"
+fi
+
+# delete cdb.log
+if [ -f ${sourcedir}/cdb.log ]
+then
+rm ${sourcedir}/cdb.log
+fi
+
+echo "INFO: Copying logs to ${pathname}"
+cp ${sourcedir}/*.log "${pathname}"
+if [ $? -ne 0 ]
+then
+    die "ERROR: Error attempting to copy logs to ${pathname}"
+fi
+
+cp -v ${sourcedir}/*.simics "${pathname}"
+
+# cp -v ${sourcedir}/*.trace "${pathname}"
+# if [ $? -ne 0 ]
+# then
+#     echo "WARNING: Error attempting to copy trace files to ${pathname}"
+# fi
+
+echo "INFO: Copied log files to ${pathname}"
+ls ${pathname}

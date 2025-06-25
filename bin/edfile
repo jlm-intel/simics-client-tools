@@ -1,0 +1,155 @@
+#!/bin/bash                                                                                                                                                           
+
+#set -x
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+if [ -z "$1" ]
+then
+    die "ERROR: Please specify a command: dis, add, or suf"
+fi
+
+# one param requred
+if [ -z "$2" ]
+then
+    die "ERROR: Please pass the filename or path of a transform file to edit."
+fi
+
+# look for "no build" flag
+NOBUILD=false
+if [ ! -z "$3" ]
+then
+    if [ "$3" == "nb" ]
+    then
+	NOBUILD=true
+    fi
+fi
+
+# make temp area
+mkdir -p /tmp/$USER
+if [ $? -ne 0 ]
+then
+    die "ERROR: Unable to make directory /tmp/$USER"
+fi
+
+
+# use parameter directly if file exists
+FILETOOPEN=$2
+if [ ! -f "$FILETOOPEN" ]
+then
+    # file not found, see if we need to search for it
+    # pipe output through head so we only take the first result
+    FOUNDPATH=`find . -name $FILETOOPEN | head -n 1`
+    if [ $? -ne 0 ]
+    then
+	die "ERROR: Unable to find file named: $FILETOOPEN in subdirectories."
+    fi
+    
+    if [ ! -f "$FOUNDPATH" ]
+    then
+	die "ERROR: No file matching $FILETOOPEN found."
+    fi
+
+    # if here, we found at least one filen
+    echo "Found file: $FOUNDPATH"
+    FILETOOPEN="$FOUNDPATH"
+fi
+
+# get base filename
+# build path to temp
+TEMPFILEONLY=$(basename $FILETOOPEN .py)
+if [ $? -ne 0 ]
+then
+	die "ERROR: Unable to get base name of: $FILETOOPEN"
+fi
+TEMPFILEFULL=/tmp/$USER/$TEMPFILEONLY
+#echo "TEMP file: $TEMPFILEFULL"
+
+# for bank disable/add prefix, simply append the necessary commands
+# for output prefix:
+# - get substring from filename (after soc_regs_wrapper, before .py)
+#${string%$searchstring*}
+REG_WRAP="soc_regs_wrapper_"
+TEMPFILEPART=${TEMPFILEONLY#*$REG_WRAP}
+#echo ${TEMPFILEPART^^} <- only works in bash 4.x or later
+# - make it upper case
+TEMPFILEPART=$(echo $TEMPFILEPART | tr [:lower:] [:upper:])
+#echo "TEMP file part: $TEMPFILEPART"
+# - set output prefix to ".(substring)"
+# - append this to temp file
+
+# print out file to matched line to temp path
+sed '/your transformations below this line/q' $FILETOOPEN > $TEMPFILEFULL
+if [ $? -ne 0 ]
+then
+	die "ERROR: Unable to create temp file: $TEMPFILEFULL"
+fi
+
+#process commands
+CURCOMMAND=$1
+SUPPORTEDCOMMAND=false
+if [ "$CURCOMMAND" == "add" ]
+then
+    SUPPORTEDCOMMAND=true
+    # make sure there's a prefix to find
+    PREFIXLINE=$(grep "# Bank prefix:" $FILETOOPEN)
+    if [ $? -ne 0 ]
+    then
+	die "ERROR: No bank prefix line found!"
+    fi
+    #echo "Prefix line: $PREFIXLINE"
+    SKIP_TEXT="# Bank prefix: "
+    FOUNDPREFIX=${PREFIXLINE#*$SKIP_TEXT}
+    
+    if [ "$FOUNDPREFIX" == "None" ]
+    then
+	echo "WARNING: No prefix available for this file. Attempting output suffix..."
+	# change current command
+	CURCOMMAND="suf"
+    else
+	echo "Found prefix: $FOUNDPREFIX"
+
+	echo -e "\n    bank.add_prefix()\n    pass\n" >> $TEMPFILEFULL
+    fi
+elif [ "$CURCOMMAND" == "dis" ]
+then
+    SUPPORTEDCOMMAND=true
+    echo -e "\n    bank.disable_bank()\n    pass\n" >> $TEMPFILEFULL
+fi
+
+# made this a separate condition in case add_prefix falls back on suffix operation
+if [ "$CURCOMMAND" == "suf" ]
+then
+    SUPPORTEDCOMMAND=true
+    echo "Applying output suffix: ${TEMPFILEPART}l..."
+    echo -e "\n    bank.add_output_suffix('.${TEMPFILEPART}')\n    pass\n" >> $TEMPFILEFULL
+fi
+
+if [ $? -ne 0 ]
+then
+    die "ERROR: Append operation failed!"
+fi
+
+if [ "$SUPPORTEDCOMMAND" == "false" ]
+then
+    die "ERROR: Unsupported command: $1. Supported commands are dis, add, or suf"
+fi
+
+# if successful so far, replace original version with temp version.
+cp $TEMPFILEFULL $FILETOOPEN
+if [ $? -ne 0 ]
+then
+    die "ERROR: Failed to copy $TEMPFILEFULL to $FILETOOPEN"
+fi
+
+# if appears successful, re-attempt make
+if [ "$NOBUILD" == "true" ]
+then
+    echo "INFO: Successfully applied $CURCOMMAND command. SKIPPING BUILD due to NOBUILD setting."
+else
+    echo "INFO: Successfully applied $CURCOMMAND command. Attempting to re-make..."
+    make tgl-p0-cdb
+fi

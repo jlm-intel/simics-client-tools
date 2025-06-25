@@ -1,0 +1,11 @@
+#!/bin/bash
+#echo $@
+echo "Running targets/nvl-s/platform.target.yml in 5f mode. Note: You can pass Simics options to this script..."
+# ./simics targets/nvl-s/platform.target.yml $@
+./simics nvl-s/platform fmod=pmc+pchpmc+csme+ese+esepp $@
+bldresult=$?
+echo "bldresult: ${bldresult}"
+if [ $bldresult -ne 0 ]
+then
+    echo "ERROR: Run failed with code $bldresult"
+fi

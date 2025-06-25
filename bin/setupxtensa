@@ -1,0 +1,30 @@
+#!/bin/bash
+
+#set -x
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+# use varsxtensa to set common variables
+source varsxtensa
+if [ $? -ne 0 ]
+then
+	die "ERROR: source varsxtensa failed!"
+fi
+
+
+export JENKINS_SHARED_DIR="/nfs/site/disks/ssg_stc_simics_jen_build_tmp/"
+if [ ! -d "$JENKINS_SHARED_DIR" ]
+then
+    die "Dir does not exist: $JENKINS_SHARED_DIR"
+fi
+export PYTHONPATH=../_tools
+if [ ! -d "$PYTHONPATH" ]
+then
+    die "Dir does not exist: ${PYTHONPATH}. Please run from project directory (ex: \"vp/adl\")"
+fi
+export label=5.0
+export JOB_NAME=testit
+python setup_xtensa.py

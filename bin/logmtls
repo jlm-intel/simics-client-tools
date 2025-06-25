@@ -1,0 +1,10 @@
+#!/bin/bash
+#echo $@
+echo "Logging mtl-s.simics to mtl-s.log..."
+./simics targets/mtl/mtl-s.simics $@ 2>&1 | tee mtl-s.log
+bldresult=$?
+echo "bldresult: ${bldresult}"
+if [ $bldresult -ne 0 ]
+then
+    echo "ERROR: Run failed with code $bldresult"
+fi

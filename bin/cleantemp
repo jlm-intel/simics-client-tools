@@ -1,0 +1,69 @@
+#!/bin/bash
+
+#set -x
+
+# this script "refreshes" a project directory so you can do a fresh, clean
+# build. it assumes you are in a project directory (ex: vp/mtl)
+
+die() {
+    echo >&2 "$@"
+    exit 1;
+}
+
+if [ ! -f "../_tools/artifactory_helper.py" ]
+then
+    echo "WARNING: ../_tools/artifactory_helper.py not found. Are you in a project root?"
+    exit 1
+fi
+
+# set_workspace deprecated by this PR: https://github.com/intel-restricted/applications.simulators.isim.vp/pull/9935
+#echo "Re-running set_workspace.py -60..."
+#../_tools/set_workspace.py -60
+
+echo "Running vp project setup..."
+vp project setup
+
+if [ -f ".modcache" ]
+then
+    echo "INFO: Deleting .modcache..."
+    rm .modcache
+fi
+
+if [ ! -d "./linux64" ]
+then
+    echo "WARNING: ./linux64 not found. Are you in a project root?"
+    exit 1
+fi
+
+# remove autogen directories not in linux64
+if [ -d "./modules/mtp-pmc-wb-cluster/mtl-soc-m-pmc-wb/auto/" ]
+    then rm -rf ./modules/mtp-pmc-wb-cluster/mtl-soc-m-pmc-wb/auto/
+fi
+if [ -d "../chips/mtl-soc-m-a0/ioe-m/ioe-pmc-wb/auto" ]
+    then rm -rf ../chips/mtl-soc-m-a0/ioe-m/ioe-pmc-wb/auto
+fi
+if [ -d "../chips/mtl-soc-m-a0/ioe-p/ioe-p-pmc-wb/auto" ]
+    then rm -rf ../chips/mtl-soc-m-a0/ioe-p/ioe-p-pmc-wb/auto
+fi
+if [ -d "../mtl/modules/mtp-pmc-wb-cluster/mtl-pch-s-pmc-wb/auto" ]
+    then rm -rf ../mtl/modules/mtp-pmc-wb-cluster/mtl-pch-s-pmc-wb/auto
+fi
+if [ -d "../mtl/modules/mtp-pmc-wb-cluster/mtl-soc-s-pmc-wb/auto" ]
+    then rm -rf ../mtl/modules/mtp-pmc-wb-cluster/mtl-soc-s-pmc-wb/auto
+fi
+
+mv ./linux64 ./linux64.old
+if [ $? -ne 0 ]
+then
+    die "ERROR: Unable to rename ./linux64 to ./linux64.old."
+fi
+
+echo "INFO: Launching remove operation of ./linux64.old in background..."
+rm -rf ./linux64.old &
+
+if [ -d "./linux64" ]
+then
+    die "ERROR: ./linux64 still exists!"
+fi
+
+echo "INFO: Successfully removed ./linux64."

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# no braces since grep itself is a command
+# -q option makes grep quiet
+if grep -q "VERSION = 11" /etc/SuSE-release
+then
+    echo "Running SUSE 11, returning 1"
+    exit 1
+else
+    echo "Not running SUSE 11, returning 0"
+fi
+exit 0
+
+    

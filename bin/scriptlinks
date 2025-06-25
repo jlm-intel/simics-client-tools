@@ -1,0 +1,45 @@
+#!/bin/bash
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+if [ -z "$1" ]
+then
+    die "ERROR: No source directory specified."
+fi
+src_dir="$1"
+
+dst_dir="$PWD"
+# need to escape > below in single-bracket expressions
+if [ $# \> 1 ]
+then
+    dst_dir="$2"
+fi
+
+# realpath fully qualifies the paths and removes trailing slashes
+src_dir=$(realpath -s $src_dir)
+dst_dir=$(realpath -s $dst_dir)
+
+echo "Source dir: ${src_dir}"
+echo "  Dest dir: ${dst_dir}"
+
+if [ ! -d "$src_dir" ]
+then
+    die "ERROR: ${src_dir} doesn't exist or isn't a directory."
+fi
+
+for curfile in "$src_dir"/*
+do
+    cur_fname=$(basename $curfile)
+    echo "Current file: ${cur_fname}"
+    src_file="${src_dir}/${cur_fname}"
+    dst_file="${dst_dir}/${cur_fname}"
+    # use -f to force overwriting of existing links
+    ln -f -s "$src_file" "$dst_file"
+    if [ $? -ne 0 ]
+    then
+        print "ERROR: Unable create link to $src_file at $dst_file"
+    fi
+done

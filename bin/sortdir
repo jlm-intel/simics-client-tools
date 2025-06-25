@@ -1,0 +1,37 @@
+#!/bin/bash                                                                                                                                                           
+
+#set -x
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+if [ -z "$1" ]
+then
+    die "ERROR: Please specify source path of unsorted text files."
+fi
+
+if [ -z "$2" ]
+then
+    echo "ERROR: Please specify target path of sorted text files."
+fi
+
+SRCDIR="$1"
+DSTDIR="$2"
+if [ ! -d "$SRCDIR" ]
+then
+    die "ERROR: ${SRCDIR} not found!"
+fi
+if [ ! -d "$DSTDIR" ]
+then
+    die "ERROR: ${DSTDIR} not found!"
+fi
+
+for curfile in "${SRCDIR}"/*
+do
+    echo "Current file: ${curfile}"
+    curfname=$(basename $curfile)
+    cat "${curfile}" | sort > "${DSTDIR}"/"${curfname}"
+done
+

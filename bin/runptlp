@@ -1,0 +1,10 @@
+#!/bin/bash
+#echo $@
+echo "Running ptl-p/platform. Note: You can pass Simics options to this script..."
+./simics ptl/ptl-p $@
+bldresult=$?
+echo "bldresult: ${bldresult}"
+if [ $bldresult -ne 0 ]
+then
+    echo "ERROR: Run failed with code $bldresult"
+fi

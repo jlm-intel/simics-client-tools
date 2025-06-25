@@ -1,0 +1,21 @@
+#!/usr/intel/bin/python3.7.4
+
+print('COMMON PRETEST COMMANDS:')
+
+print('\nBasic pretest (no windows):')
+print('vp pretest trigger')
+
+print('\nList affected platforms:')
+print('vp pretest trigger -n')
+
+print ('\nExpert mode (no windows):')
+print('vp pretest trigger --force --platforms \"platform1 platform2\"')
+
+print('\nExpert mode with packages:')
+print('vp pretest trigger --force --platforms \"platform1 platform2\" --run-windows --archive-packages')
+
+# --no-scan-deps apparently deprecated. Procedure now same as regular platform?
+#print('\nForce package build of non-active/non-develop branch')
+#print('vp pretest trigger --no-scan-deps --platforms \"platform1 platform2\" --force --run-windows --archive-packages')
+
+print('\n')

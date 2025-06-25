@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# This script searches for *.log in the specified target directory (or . if no dir specified) and extracts any
+# case-insensitive instance of "error", "fail", "exception", or "TraceBack" into separate TXT files.
+# It also combines those results into a single "combined.txt" file, with a separate version with all known
+# timestamp formats removed ("nostamps-combined.txt"). You can use these to quickly find all possible errors
+# in a set of test log files.
+#
+# You can use comparefiles.py to compare the resulting TXT files between two test results to find differences
+# in the errors reported between two test runs. (It can identify unique errors between two tests.)
+
+#set -x
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+TARGDIR=.
+if [ ! -z "$1" ]
+then
+    TARGDIR="$1"
+fi
+
+pushd $TARGDIR
+grep -i error *.log > error.txt
+grep -i fail *.log > fail.txt
+grep -i exception *.log > exception.txt
+grep -i traceback *.log > traceback.txt
+cat error.txt > combined.txt
+cat fail.txt >> combined.txt
+cat exception.txt >> combined.txt
+cat traceback.txt >> combined.txt
+nostamps.py combined.txt nostamps-combined.txt
+echo "Created text files in ${TARGDIR}."
+ls -l *.txt
+popd

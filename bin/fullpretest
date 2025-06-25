@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#set -x
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+# simcloud switches
+# --archive-pkg - save packages
+# --run-windows - run windows build (works with --archive-pkg too)
+# --expert - Choose individual platforms to run.
+
+#PRETEST_SCRIPT="../_tools/ee_pretest.py"
+PRETEST_SCRIPT="../_tools/cloud_pretest.py"
+if [ ! -f "${PRETEST_SCRIPT}" ]
+then
+    die "ERROR: ${PRETEST_SCRIPT} not found. Are you in a project root (adl, mtl, etc)?"
+fi
+
+if [ ! -f "bin/mini-python" ]
+then
+    die "ERROR: bin/mini-python not found. Are you in a set-up project directory (adl, mtl, etc.)?"
+fi
+
+# not archiving packages or running expert mode
+bin/mini-python ${PRETEST_SCRIPT} --run-windows $1 $2
+if [ $? -ne 0 ]
+then
+    die "ERROR: ${PRETEST_SCRIPT} returned an error!"
+fi
+
+echo "Successfully launched ${PRETEST_SCRIPT}."
+exit 0

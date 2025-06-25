@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#set -x
+
+export auth=$ORIGUSER:USER_INPUT
+export version="1.14.0"
+export work_dir=./temp
+export repo_dir=./temp/repo
+export http_proxy="http://proxy-dmz.intel.com:911"
+export https_proxy="http://proxy-dmz.intel.com:912"
+export ftp_proxy="http://proxy-dmz.intel.com:21"
+export socks_proxy="http://proxy-dmz.intel.com:1080"
+export no_proxy="intel.com,.intel.com,localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,172.16.0.0/12,.sslip.io"
+export PATH=$PATH:/nfs/site/disks/central_tools_tree/sles12/methodology/stable/bin
+rm -rf venv
+/nfs/site/disks/central_tools_tree/sles12/python/3.11.2/bin/python3 -m venv venv
+. venv/bin/activate
+curl --get https://simics-artifactory.devtools.intel.com/artifactory/simics-local/pub/simics-collateral-manager/collateral-interface/stable/simics_cs_applications-$version-py3-none-any.whl > simics_cs_applications-$version-py3-none-any.whl
+python -m pip install --force-reinstall --use-pep517 simics_cs_applications-$version-py3-none-any.whl
+mkdir -p $repo_dir

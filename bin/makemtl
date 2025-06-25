@@ -1,0 +1,26 @@
+#!/bin/bash
+
+NUMJOBS=4
+if [ -z $1 ]
+then
+    echo "Defaulting to $NUMJOBS jobs..."
+else
+    NUMJOBS=$1
+fi
+
+export BUILD_CONFIDENTIALITY=99
+export ENVCHECK=disable
+
+# NOTE: Nice range is from -20 (highest priorty) to 19 (lowest priority)
+
+#adl + pmc + punit only
+echo "nice -n 5 gmake -j${NUMJOBS} pkg-7500"
+nice -n 5 gmake -j${NUMJOBS}       pkg-7500 2>&1 | tee build.log
+bldresult=$?
+echo "bldresult: ${bldresult}"
+if [ $bldresult -ne 0 ]
+then
+    echo "ERROR: Build failed with code ${bldresult}. See build.log for details."
+else
+    echo "INFO: Build (supposedly) succeeded."
+fi

@@ -1,0 +1,49 @@
+#!/bin/bash
+
+#set -x
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+if [ -z "$1" ]
+then
+    die "ERROR: Please specify directory to search for files to rename (no wildcards)."
+fi
+
+if [ -z "$2" ]
+then
+    die "ERROR: Please specify substring to search for in filenames."
+fi
+
+if [ -z "$3" ]
+then
+    die "ERROR: Please specify substring to replace $2 with in filenames."
+fi
+
+if [ ! -d "$1" ]
+then
+    die "ERROR: $1 is not a valid directory."
+fi
+
+echo "Searching for files matching ${1}..."
+for curfile in "$1"/*
+do
+    #echo "1: $1"
+    #echo "2: $2"
+    #echo "3: $3"
+    SRCFILENAME="$curfile"
+    DSTFILENAME="${curfile//$2/$3}"
+    if [ "$SRCFILENAME" == "$DSTFILENAME" ]
+    then
+        echo "Skipping $SRCFILENAME (no change required)."
+    else
+        echo "Renaming $SRCFILENAME to ${DSTFILENAME}..."
+        mv $SRCFILENAME ${DSTFILENAME}
+        if [ $? -ne 0 ]
+        then
+            print "ERROR: Unable to rename $SRCFILENAME"
+        fi
+    fi
+done

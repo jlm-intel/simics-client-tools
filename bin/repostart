@@ -1,0 +1,48 @@
+
+#!/bin/bash
+
+#set -x
+
+# this script pulls the git repo and enables LFS on it. you just have to
+# enter your desired project directory (Mtl, for example) and manually
+# run the following to finish up:
+# ../_tools/set_workspace.py -60
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+# one param requred
+if [ -z "$1" ]
+then
+    die "ERROR: Please pass the name of the directory to hold the repo (master, vp, etc)."
+fi
+
+echo "Beginning clone operation. Keep an eye out for prompts..."
+# below is for github repo
+git clone https://github.com/intel-restricted/applications.simulators.isim.vp.git "$1"
+# below is for gitlab repo
+# git clone ssh://git@gitlab.devtools.intel.com:29418/simics/vp/vp.git "$1"
+if [ $? -ne 0 ]
+then
+    die "ERROR: Git clone failed!"
+fi
+
+echo "Changing into ${1}..."
+cd "$1"
+if [ $? -ne 0 ]
+then
+    die "ERROR: Unable to change into ${1}"
+fi
+
+echo "Installing git LFS..."
+git lfs install --skip-repo
+if [ $? -ne 0 ]
+then
+    die "ERROR: Unable to install Git LFS!"
+fi
+
+# if we're here we did it
+echo "Completed downloading. Now change into ${1} and set up your desired project directory."
+exit 0

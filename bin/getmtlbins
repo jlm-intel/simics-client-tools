@@ -1,0 +1,37 @@
+#!/bin/bash
+
+#set -x
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+SOURCEPATH="/nfs/site/disks/ssg_stc_simics_jen_last_good/meteorlake-m-6.0/linux64.tar.gz"
+
+if [ ! -f "../_tools/set_workspace.py" ]
+then
+    echo "WARNING: ../_tools/set_workspace.py not found. Are you in a project root?"
+    exit 1
+fi
+
+if [ ! -f $SOURCEPATH ]
+then
+    die "ERROR: Unable to locate file ${SOURCEPATH}"
+fi
+
+echo "Copying ${SOURCEPATH} to ${PWD}..."
+cp $SOURCEPATH .
+if [ $? -ne 0 ]
+then
+    die "ERROR: Failed to copy ${SOURCEPATH} to ${PWD}"
+fi
+
+echo "Extracting files to ./linux64..."
+tar -xzf linux64.tar.gz
+if [ $? -ne 0 ]
+then
+    die "ERROR: Failed to extract linux64.tar.gz to ${PWD}"
+fi
+
+echo "INFO: Successfully copied and installed binaries."

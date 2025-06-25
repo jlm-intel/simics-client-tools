@@ -1,0 +1,43 @@
+#!/bin/bash
+
+#set -x
+
+die() {
+        echo >&2 "$@"
+        exit 1;
+}
+
+if [ -z "$1" ]
+then
+    die "ERROR: please pass the name of a file to upload"
+fi
+
+if [ ! -f "$1" ]
+then
+    die "ERROR: ${1} is not a file!"
+fi
+echo "File to upload: ${1}"
+
+UPLOAD_DIR="https://simics-artifactory.devtools.intel.com/artifactory/list/simics-repos/pub/jlmayfie"
+if [ ! -z "$2" ]
+then
+    echo "Overriding upload directory..."
+    UPLOAD_DIR="${2}"
+fi
+echo "Upload directory: ${UPLOAD_DIR}"
+
+HPM_PATH="/tmp/localdisk/simics/jlmayfie/gh01/_tools/hpm.py"
+if [ ! -f "${HPM_PATH}" ]
+then
+    die "ERROR: Unable to find HPM at ${HPM_PATH}"
+fi
+
+"$HPM_PATH" up "$UPLOAD_DIR" "${1}"
+hpmresult=$?
+echo "hpmresult: ${hpmresult}"
+if [ $hpmresult -ne 0 ]
+then
+    echo "ERROR: Upload failed with code ${bldresult}. See build.log for details."
+else
+    echo "INFO: Upload succeeded: ${UPLOAD_DIR}/${1}"
+fi
